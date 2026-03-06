@@ -43,7 +43,7 @@ public class TelaPrincipal extends JFrame {
         painelFundo.add(painelLavoura, "North");
         painelFundo.add(painelDespesa, "Center");
         painelFundo.add(painelRelatorio, "South");
-        this.add(painelFundo);
+        this.setContentPane(painelFundo);
     }
 
     private JPanel criarPainelLavoura() {
@@ -128,10 +128,10 @@ public class TelaPrincipal extends JFrame {
     private JPanel criarPainelRelatorio() {
         JPanel panel = new JPanel();
         panel.setBorder(BorderFactory.createTitledBorder("Relatório"));
-        this.textArea = new JTextArea(10, 50);
+        this.textArea = new JTextArea(10, 35);
         this.textArea.setEditable(false);
         JButton relatorioBtn = new JButton("Gerar Relatório");
-        relatorioBtn.setPreferredSize(new Dimension(150, 30));
+        relatorioBtn.setPreferredSize(new Dimension(150, 35));
         relatorioBtn.addActionListener((e) -> {
             String nome = (String)this.lavouraBox.getSelectedItem();
             if (nome != null) {

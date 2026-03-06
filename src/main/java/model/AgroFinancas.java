@@ -1,58 +1,73 @@
 package model;
 
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.ObjectInputStream;
-import java.io.ObjectOutputStream;
-import java.io.Serializable;
+import java.io.*;
 import java.util.ArrayList;
 import java.util.List;
 
-public class AgroFinancas implements Serializable {
+public class AgroFinancas implements ISistemaFinancas, Serializable {
+
     private static final long serialVersionUID = 1L;
-    private List<Lavoura> lavouras = this.carregar();
     private static final String ARQUIVO = "agrofinancas.dat";
 
-    public void adicionarLavoura(Lavoura l) {
-        this.lavouras.add(l);
-        this.salvar();
+    private List<Lavoura> lavouras;
+
+    public AgroFinancas() {
+        this.lavouras = carregar();
     }
 
+    @Override
+    public void adicionarLavoura(Lavoura l) {
+        lavouras.add(l);
+        salvar();
+    }
+
+    @Override
     public boolean removerLavoura(String nome) {
-        boolean removido = this.lavouras.removeIf((l) -> l.getNome().equalsIgnoreCase(nome));
+        boolean removido = lavouras.removeIf(
+                l -> l.getNome().equalsIgnoreCase(nome)
+        );
+
         if (removido) {
-            this.salvar();
+            salvar();
         }
 
         return removido;
     }
 
+    @Override
     public List<Lavoura> getLavouras() {
-        return this.lavouras;
+        return lavouras;
     }
 
+    @Override
     public void salvar() {
-        try (ObjectOutputStream oos = new ObjectOutputStream(new FileOutputStream("agrofinancas.dat"))) {
-            oos.writeObject(this.lavouras);
+        try (ObjectOutputStream oos =
+                     new ObjectOutputStream(new FileOutputStream(ARQUIVO))) {
+
+            oos.writeObject(lavouras);
+
         } catch (IOException e) {
             e.printStackTrace();
         }
-
     }
 
+    @SuppressWarnings("unchecked")
     private List<Lavoura> carregar() {
-        File f = new File("agrofinancas.dat");
-        if (!f.exists()) {
-            return new ArrayList();
-        } else {
-            try (ObjectInputStream ois = new ObjectInputStream(new FileInputStream(f))) {
-                return (List)ois.readObject();
-            } catch (ClassNotFoundException | IOException e) {
-                ((Exception)e).printStackTrace();
-                return new ArrayList();
-            }
+
+        File arquivo = new File(ARQUIVO);
+
+        if (!arquivo.exists()) {
+            return new ArrayList<>();
+        }
+
+        try (ObjectInputStream ois =
+                     new ObjectInputStream(new FileInputStream(arquivo))) {
+
+            return (List<Lavoura>) ois.readObject();
+
+        } catch (IOException | ClassNotFoundException e) {
+            e.printStackTrace();
+            return new ArrayList<>();
         }
     }
 }

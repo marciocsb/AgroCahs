@@ -19,13 +19,13 @@ public class PainelFundo extends JPanel {
         }
 
         this.setLayout(new BorderLayout());
-    }
 
+    }
+    @Override
     protected void paintComponent(Graphics g) {
         super.paintComponent(g);
-        if (this.imagem != null) {
+        if  ( imagem != null) {
             g.drawImage(this.imagem, 0, 0, this.getWidth(), this.getHeight(), this);
         }
-
     }
 }
