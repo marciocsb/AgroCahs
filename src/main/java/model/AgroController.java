@@ -1,38 +1,60 @@
 package model;
 
+import java.util.List;
+
 public class AgroController {
-    private AgroFinancas sistema = new AgroFinancas();
+
+    private AgroFinancas sistema;
+
+    public AgroController() {
+        sistema = new AgroFinancas();
+    }
 
     public AgroFinancas getSistema() {
-        return this.sistema;
+        return sistema;
     }
 
-    public void adicionarLavoura(String nome, double area) {
-        this.sistema.adicionarLavoura(new Lavoura(nome, area));
+    // ==================== USUÁRIOS ==================== //
+    public void adicionarUsuario(Usuario u) {
+        sistema.adicionarUsuario(u);
     }
 
-    public void removerLavoura(String nome) {
-        this.sistema.removerLavoura(nome);
+    public void removerUsuario(Usuario u) {
+        sistema.removerUsuario(u);
     }
 
-    public void registrarDespesa(String nomeLavoura, TipoDespesa tipo, double valor) {
-        for(Lavoura l : this.sistema.getLavouras()) {
-            if (l.getNome().equalsIgnoreCase(nomeLavoura)) {
-                l.registrarDespesa(new Despesa(tipo, valor));
-                this.sistema.salvar();
-                break;
-            }
-        }
-
+    public boolean cpfExiste(String cpf) {
+        return sistema.cpfExiste(cpf);
     }
 
-    public String gerarRelatorio(String nomeLavoura) {
-        for(Lavoura l : this.sistema.getLavouras()) {
-            if (l.getNome().equalsIgnoreCase(nomeLavoura)) {
-                return l.gerarRelatorio();
-            }
-        }
+    // ==================== LAVOURAS ==================== //
+    public void adicionarLavoura(Usuario u, Lavoura l) {
+        sistema.adicionarLavoura(u, l);
+    }
 
-        return "Lavoura não encontrada.";
+    public boolean removerLavoura(Usuario u, String nome) {
+        return sistema.removerLavoura(u, nome);
+    }
+
+    public List<Lavoura> getLavouras(Usuario u) {
+        return sistema.getLavouras(u);
+    }
+
+    public Lavoura pesquisarLavoura(Usuario u, String nomeLavoura) {
+        return sistema.pesquisarLavoura(u, nomeLavoura);
+    }
+
+    // ==================== DESPESAS ==================== //
+    public void registrarDespesa(Usuario u, String nomeLavoura, TipoDespesa tipo, double valor) {
+        sistema.registrarDespesa(u, nomeLavoura, new Despesa(tipo, valor));
+    }
+
+    // ==================== RELATÓRIO ==================== //
+    public String gerarRelatorio(Usuario u, String nomeLavoura) {
+        return sistema.gerarRelatorio(u, nomeLavoura);
+    }
+
+    public List<Usuario> getUsuarios() {
+        return sistema.getUsuarios();
     }
 }

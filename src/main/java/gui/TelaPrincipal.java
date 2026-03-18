@@ -1,155 +1,252 @@
 package gui;
 
-import java.awt.Component;
-import java.awt.Dimension;
+import model.*;
+
+import javax.swing.*;
+import java.awt.*;
 import java.text.NumberFormat;
+import java.util.List;
 import java.util.Locale;
-import javax.swing.BorderFactory;
-import javax.swing.JButton;
-import javax.swing.JComboBox;
-import javax.swing.JFrame;
-import javax.swing.JLabel;
-import javax.swing.JOptionPane;
-import javax.swing.JPanel;
-import javax.swing.JScrollPane;
-import javax.swing.JTextArea;
-import javax.swing.JTextField;
-import model.AgroController;
-import model.Lavoura;
-import model.TipoDespesa;
 
 public class TelaPrincipal extends JFrame {
+
     private AgroController controller;
     private JTextArea textArea;
-    private JTextField nomeField;
-    private JTextField areaField;
-    private JTextField valorField;
+
+    // Campos de usuário
+    private JTextField usuarioNomeField, usuarioCpfField;
+    private JComboBox<Usuario> usuarioBox;
+    private Usuario usuarioAtual;
+
+    // Campos de lavoura
+    private JTextField nomeField, areaField;
     private JComboBox<String> lavouraBox;
+
+    // Campos de despesa
     private JComboBox<TipoDespesa> tipoDespesaBox;
+    private JTextField valorField;
 
     public TelaPrincipal(AgroController controller) {
         this.controller = controller;
-        this.setTitle("Sistema AgroFinanças");
-        this.setSize(800, 600);
-        this.setDefaultCloseOperation(3);
-        this.setLocationRelativeTo((Component)null);
+        setTitle("Sistema AgroFinanças");
+        setSize(900, 650);
+        setDefaultCloseOperation(EXIT_ON_CLOSE);
+        setLocationRelativeTo(null);
+
         PainelFundo painelFundo = new PainelFundo();
-        JPanel painelLavoura = this.criarPainelLavoura();
-        JPanel painelDespesa = this.criarPainelDespesa();
-        JPanel painelRelatorio = this.criarPainelRelatorio();
-        painelLavoura.setOpaque(false);
-        painelDespesa.setOpaque(false);
-        painelRelatorio.setOpaque(false);
-        painelFundo.add(painelLavoura, "North");
-        painelFundo.add(painelDespesa, "Center");
-        painelFundo.add(painelRelatorio, "South");
-        this.setContentPane(painelFundo);
+        painelFundo.add(criarPainelUsuario(), BorderLayout.NORTH);
+        painelFundo.add(criarPainelLavoura(), BorderLayout.WEST);
+        painelFundo.add(criarPainelDespesa(), BorderLayout.CENTER);
+        painelFundo.add(criarPainelRelatorio(), BorderLayout.SOUTH);
+
+        setContentPane(painelFundo);
+        atualizarComboUsuarios();
     }
 
-    private JPanel criarPainelLavoura() {
+    // ==================== PAINEL USUÁRIO ==================== //
+    private JPanel criarPainelUsuario() {
         JPanel panel = new JPanel();
-        panel.setBorder(BorderFactory.createTitledBorder("Gerenciar Lavoura"));
-        this.nomeField = new JTextField(8);
-        this.areaField = new JTextField(5);
-        JButton adicionarBtn = new JButton("Adicionar");
-        JButton removerBtn = new JButton("Remover");
-        adicionarBtn.setPreferredSize(new Dimension(120, 30));
-        removerBtn.setPreferredSize(new Dimension(120, 30));
-        adicionarBtn.addActionListener((e) -> {
-            try {
-                String nome = this.nomeField.getText();
-                double area = Double.parseDouble(this.areaField.getText());
-                this.controller.adicionarLavoura(nome, area);
-                this.atualizarCombo();
-                this.nomeField.setText("");
-                this.areaField.setText("");
-            } catch (NumberFormatException var5) {
-                JOptionPane.showMessageDialog(this, "Digite apenas números na área!");
+        panel.setBorder(BorderFactory.createTitledBorder("Usuário"));
+
+        usuarioNomeField = new JTextField(10);
+        usuarioCpfField = new JTextField(10);
+        usuarioBox = new JComboBox<>();
+
+        // Atualiza usuarioAtual quando muda a seleção
+        usuarioBox.addActionListener(e -> {
+            Usuario selecionado = (Usuario) usuarioBox.getSelectedItem();
+            if (selecionado != null) {
+                usuarioAtual = selecionado;
+                atualizarComboLavouras();
+            }
+        });
+
+        JButton definirUsuarioBtn = new JButton("Definir Usuário");
+        definirUsuarioBtn.setPreferredSize(new Dimension(160, 30));
+        definirUsuarioBtn.addActionListener(e -> {
+            String nome = usuarioNomeField.getText().trim();
+            String cpfLimpo = usuarioCpfField.getText().trim().replaceAll("\\D", "");
+
+            if (nome.isEmpty() || cpfLimpo.isEmpty()) {
+                JOptionPane.showMessageDialog(this, "Preencha nome e CPF!");
+                return;
             }
 
-        });
-        removerBtn.addActionListener((e) -> {
-            String nome = (String)this.lavouraBox.getSelectedItem();
-            if (nome != null) {
-                int opcao = JOptionPane.showConfirmDialog(this, "Tem certeza que deseja remover a lavoura \"" + nome + "\"?", "Confirmação", 0);
-                if (opcao == 0) {
-                    this.controller.removerLavoura(nome);
-                    this.atualizarCombo();
-                }
+            if (controller.cpfExiste(cpfLimpo)) {
+                JOptionPane.showMessageDialog(this, "CPF já cadastrado!");
+                return;
             }
 
+            usuarioAtual = new Usuario(nome, cpfLimpo);
+            controller.adicionarUsuario(usuarioAtual);
+            atualizarComboUsuarios();
+            JOptionPane.showMessageDialog(this, "Usuário definido: " + nome);
+
+            usuarioNomeField.setText("");
+            usuarioCpfField.setText("");
         });
+
+        JButton removerUsuarioBtn = new JButton("Remover Usuário");
+        removerUsuarioBtn.setPreferredSize(new Dimension(160, 30));
+        removerUsuarioBtn.addActionListener(e -> {
+            if (usuarioAtual == null) {
+                JOptionPane.showMessageDialog(this, "Selecione um usuário!");
+                return;
+            }
+            controller.removerUsuario(usuarioAtual);
+            usuarioAtual = null;
+            atualizarComboUsuarios();
+            atualizarComboLavouras();
+        });
+
         panel.add(new JLabel("Nome:"));
-        panel.add(this.nomeField);
-        panel.add(new JLabel("Área:"));
-        panel.add(this.areaField);
-        panel.add(adicionarBtn);
-        panel.add(removerBtn);
+        panel.add(usuarioNomeField);
+        panel.add(new JLabel("CPF:"));
+        panel.add(usuarioCpfField);
+        panel.add(definirUsuarioBtn);
+        panel.add(removerUsuarioBtn);
+        panel.add(new JLabel("Usuários:"));
+        panel.add(usuarioBox);
         return panel;
     }
 
+    // ==================== PAINEL LAVOURA ==================== //
+    private JPanel criarPainelLavoura() {
+        JPanel panel = new JPanel();
+        panel.setBorder(BorderFactory.createTitledBorder("Gerenciar Lavoura"));
+
+        nomeField = new JTextField(8);
+        areaField = new JTextField(5);
+        lavouraBox = new JComboBox<>();
+
+        JButton adicionarBtn = new JButton("Adicionar");
+        JButton removerBtn = new JButton("Remover");
+        adicionarBtn.setPreferredSize(new Dimension(115, 30));
+        removerBtn.setPreferredSize(new Dimension(120, 30));
+
+        adicionarBtn.addActionListener(e -> {
+            if (usuarioAtual == null) {
+                JOptionPane.showMessageDialog(this, "Defina um usuário!");
+                return;
+            }
+            try {
+                controller.adicionarLavoura(usuarioAtual, new Lavoura(nomeField.getText().trim(),
+                        Double.parseDouble(areaField.getText())));
+                atualizarComboLavouras();
+                nomeField.setText("");
+                areaField.setText("");
+            } catch (NumberFormatException ex) {
+                JOptionPane.showMessageDialog(this, "Área inválida!");
+            }
+        });
+
+        removerBtn.addActionListener(e -> {
+            if (usuarioAtual == null) {
+                JOptionPane.showMessageDialog(this, "Defina um usuário!");
+                return;
+            }
+            String nomeLavoura = (String) lavouraBox.getSelectedItem();
+            if (nomeLavoura != null) {
+                controller.removerLavoura(usuarioAtual, nomeLavoura);
+                atualizarComboLavouras();
+            }
+        });
+
+        panel.add(new JLabel("Nome:"));
+        panel.add(nomeField);
+        panel.add(new JLabel("Área:"));
+        panel.add(areaField);
+        panel.add(adicionarBtn);
+        panel.add(removerBtn);
+        panel.add(new JLabel("Lavouras:"));
+        panel.add(lavouraBox);
+        return panel;
+    }
+
+    // ==================== PAINEL DESPESA ==================== //
     private JPanel criarPainelDespesa() {
         JPanel panel = new JPanel();
         panel.setBorder(BorderFactory.createTitledBorder("Registrar Despesa"));
-        this.lavouraBox = new JComboBox();
-        this.tipoDespesaBox = new JComboBox(TipoDespesa.values());
-        this.valorField = new JTextField(5);
+
+        tipoDespesaBox = new JComboBox<>(TipoDespesa.values());
+        valorField = new JTextField(10);
+
         JButton despesaBtn = new JButton("Registrar");
-        despesaBtn.setPreferredSize(new Dimension(120, 30));
-        despesaBtn.addActionListener((e) -> {
-            int index = this.lavouraBox.getSelectedIndex();
-            if (index != -1) {
+        despesaBtn.setPreferredSize(new Dimension(120, 40));
+        despesaBtn.addActionListener(e -> {
+            if (usuarioAtual == null) {
+                JOptionPane.showMessageDialog(this, "Defina um usuário!");
+                return;
+            }
+            String nomeLavoura = (String) lavouraBox.getSelectedItem();
+            if (nomeLavoura != null) {
                 try {
-                    String nome = (String)this.lavouraBox.getSelectedItem();
-                    TipoDespesa tipo = (TipoDespesa)this.tipoDespesaBox.getSelectedItem();
-                    double valor = Double.parseDouble(this.valorField.getText());
-                    this.controller.registrarDespesa(nome, tipo, valor);
+                    TipoDespesa tipo = (TipoDespesa) tipoDespesaBox.getSelectedItem();
+                    double valor = Double.parseDouble(valorField.getText());
+                    controller.registrarDespesa(usuarioAtual, nomeLavoura, tipo, valor);
                     NumberFormat nf = NumberFormat.getCurrencyInstance(new Locale("pt", "BR"));
-                    JTextArea var10000 = this.textArea;
-                    String var10001 = String.valueOf(tipo);
-                    var10000.append("Despesa registrada: " + var10001 + " - " + nf.format(valor) + "\n");
-                    this.valorField.setText("");
-                } catch (NumberFormatException var8) {
-                    JOptionPane.showMessageDialog(this, "Digite apenas números!");
+                    textArea.append("Despesa registrada: " + tipo + " - " + nf.format(valor) + "\n");
+                    valorField.setText("");
+                } catch (NumberFormatException ex) {
+                    JOptionPane.showMessageDialog(this, "Valor inválido!");
                 }
             }
-
         });
+
         panel.add(new JLabel("Lavoura:"));
-        panel.add(this.lavouraBox);
+        panel.add(lavouraBox);
         panel.add(new JLabel("Tipo:"));
-        panel.add(this.tipoDespesaBox);
+        panel.add(tipoDespesaBox);
         panel.add(new JLabel("Valor:"));
-        panel.add(this.valorField);
+        panel.add(valorField);
         panel.add(despesaBtn);
         return panel;
     }
 
+    // ==================== PAINEL RELATÓRIO ==================== //
     private JPanel criarPainelRelatorio() {
         JPanel panel = new JPanel();
         panel.setBorder(BorderFactory.createTitledBorder("Relatório"));
-        this.textArea = new JTextArea(10, 35);
-        this.textArea.setEditable(false);
-        JButton relatorioBtn = new JButton("Gerar Relatório");
-        relatorioBtn.setPreferredSize(new Dimension(150, 35));
-        relatorioBtn.addActionListener((e) -> {
-            String nome = (String)this.lavouraBox.getSelectedItem();
-            if (nome != null) {
-                this.textArea.setText(this.controller.gerarRelatorio(nome));
-            }
 
+        textArea = new JTextArea(10, 35);
+        textArea.setEditable(false);
+
+        JButton relatorioBtn = new JButton("Gerar Relatório");
+        relatorioBtn.setPreferredSize(new Dimension(140, 30));
+        relatorioBtn.addActionListener(e -> {
+            String nomeLavoura = (String) lavouraBox.getSelectedItem();
+            if (usuarioAtual != null && nomeLavoura != null) {
+                textArea.setText(controller.gerarRelatorio(usuarioAtual, nomeLavoura));
+            }
         });
+
         panel.add(relatorioBtn);
-        panel.add(new JScrollPane(this.textArea));
+        panel.add(new JScrollPane(textArea));
         return panel;
     }
 
-    private void atualizarCombo() {
-        this.lavouraBox.removeAllItems();
-
-        for(Lavoura l : this.controller.getSistema().getLavouras()) {
-            this.lavouraBox.addItem(l.getNome());
+    // ==================== MÉTODOS AUXILIARES ==================== //
+    private void atualizarComboUsuarios() {
+        usuarioBox.removeAllItems();
+        for (Usuario u : controller.getSistema().getUsuarios()) {
+            usuarioBox.addItem(u);
         }
+        // Seleciona primeiro usuário, se houver
+        if (usuarioBox.getItemCount() > 0){
+            usuarioBox.setSelectedIndex(0);
+            usuarioAtual = (Usuario) usuarioBox.getSelectedItem();
+        } else {
+            usuarioAtual = null;
+        }
+        atualizarComboLavouras();
+    }
 
+    private void atualizarComboLavouras() {
+        lavouraBox.removeAllItems();
+        if (usuarioAtual != null) {
+            for (Lavoura l : controller.getSistema().getLavouras(usuarioAtual)) {
+                lavouraBox.addItem(l.getNome());
+            }
+        }
     }
 }

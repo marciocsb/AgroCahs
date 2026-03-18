@@ -12,11 +12,6 @@ public class Despesa implements Serializable {
         this.valor = valor;
     }
 
-    public TipoDespesa getTipo() {
-        return this.tipo;
-    }
-
-    public double getValor() {
-        return this.valor;
-    }
+    public TipoDespesa getTipo() { return tipo; }
+    public double getValor() { return valor; }
 }
