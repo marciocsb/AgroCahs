@@ -3,6 +3,7 @@ package model;
 import java.io.Serializable;
 
 public class Despesa implements Serializable {
+
     private static final long serialVersionUID = 1L;
     private TipoDespesa tipo;
     private double valor;

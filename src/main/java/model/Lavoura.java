@@ -7,6 +7,7 @@ import java.util.List;
 public class Lavoura implements Serializable {
 
     private static final long serialVersionUID = 1L;
+
     private String nome;
     private double area;
     private List<Despesa> despesas;

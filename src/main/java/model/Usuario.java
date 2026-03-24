@@ -6,6 +6,7 @@ import java.util.Objects;
 public class Usuario implements Serializable {
 
     private static final long serialVersionUID = 1L;
+
     private String nome;
     private String cpf;
 
@@ -29,5 +30,7 @@ public class Usuario implements Serializable {
     public int hashCode() { return Objects.hash(cpf); }
 
     @Override
-    public String toString() { return nome + " (" + cpf + ")"; }
+    public String toString() {
+        return nome + " (" + cpf + ")";
+    }
 }
