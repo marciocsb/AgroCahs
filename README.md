@@ -3,7 +3,7 @@
 *Descrição:*
 O AgroCahs é um sistema desenvolvido em Java com o objetivo de auxiliar no controle financeiro de atividades agrícolas. A aplicação permite o cadastro de usuários, gerenciamento de lavouras e registro de despesas associadas, proporcionando uma organização eficiente dos dados financeiros no contexto do agronegócio.
 
-*Objetivo*
+*Objetivo:*
 O projeto tem como finalidade aplicar conceitos de programação orientada a objetos, organização em camadas e persistência de dados, simulando um sistema de gerenciamento financeiro.
 Arquitetura do Sistema
 O sistema foi estruturado seguindo uma separação em camadas inspirada no padrão Model-View-Controller (MVC).
