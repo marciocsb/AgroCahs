@@ -7,6 +7,9 @@ import java.awt.*;
 import java.text.NumberFormat;
 import java.util.Locale;
 
+/**
+ * Tela principal do sistema AgroFinancas, interface gráfica com Swing.
+ */
 public class TelaPrincipal extends JFrame {
 
     private AgroController controller;
@@ -36,8 +39,9 @@ public class TelaPrincipal extends JFrame {
 
         atualizarComboUsuarios();
 
-        pack(); // 🔥 resolve corte de componentes
+        pack(); // Resolve corte de componentes
     }
+
     private JPanel criarPainelUsuario() {
         JPanel panel = new JPanel(new GridLayout(2, 4, 10, 10));
         panel.setBorder(BorderFactory.createTitledBorder("Usuário"));
@@ -77,7 +81,11 @@ public class TelaPrincipal extends JFrame {
         JButton removerBtn = new JButton("Remover Usuário");
         removerBtn.addActionListener(e -> {
             if (usuarioAtual == null) return;
-            controller.removerUsuario(usuarioAtual);
+
+            boolean removido = controller.removerUsuario(usuarioAtual); // Chama controller com confirmação
+            if (removido) {
+                JOptionPane.showMessageDialog(this, "Usuário removido com sucesso!");
+            }
             atualizarComboUsuarios();
         });
 
@@ -92,12 +100,11 @@ public class TelaPrincipal extends JFrame {
 
         return panel;
     }
+
     private JPanel criarPainelCentro() {
         JPanel panel = new JPanel(new GridLayout(1, 2, 10, 10));
-
         panel.add(criarPainelLavoura());
         panel.add(criarPainelDespesa());
-
         return panel;
     }
 
@@ -131,7 +138,10 @@ public class TelaPrincipal extends JFrame {
 
             String nome = (String) lavouraBox.getSelectedItem();
             if (nome != null) {
-                controller.removerLavoura(usuarioAtual, nome);
+                boolean removido = controller.removerLavoura(usuarioAtual, nome); // Chama controller com confirmação
+                if (removido) {
+                    JOptionPane.showMessageDialog(this, "Lavoura removida com sucesso!");
+                }
                 atualizarComboLavouras();
             }
         });
@@ -165,7 +175,7 @@ public class TelaPrincipal extends JFrame {
                 TipoDespesa tipo = (TipoDespesa) tipoDespesaBox.getSelectedItem();
                 double valor = Double.parseDouble(valorField.getText());
 
-                controller.registrarDespesa(usuarioAtual, lavoura, tipo, valor);
+                controller.registrarDespesa(usuarioAtual, lavoura, new Despesa(tipo, valor));
 
                 NumberFormat nf = NumberFormat.getCurrencyInstance(new Locale("pt", "BR"));
                 textArea.append(tipo + ": " + nf.format(valor) + "\n");
@@ -198,10 +208,8 @@ public class TelaPrincipal extends JFrame {
         textArea.setEditable(false);
 
         JButton btn = new JButton("Gerar Relatório");
-
         btn.addActionListener(e -> {
             if (usuarioAtual == null) return;
-
             String lavoura = (String) lavouraBox.getSelectedItem();
             if (lavoura != null) {
                 textArea.setText(controller.gerarRelatorio(usuarioAtual, lavoura));
@@ -217,13 +225,15 @@ public class TelaPrincipal extends JFrame {
     private void atualizarComboUsuarios() {
         usuarioBox.removeAllItems();
 
-        for (Usuario u : controller.getSistema().getUsuarios()) {
+        for (Usuario u : controller.getUsuarios()) {
             usuarioBox.addItem(u);
         }
 
         if (usuarioBox.getItemCount() > 0) {
             usuarioBox.setSelectedIndex(0);
             usuarioAtual = (Usuario) usuarioBox.getSelectedItem();
+        } else {
+            usuarioAtual = null;
         }
 
         atualizarComboLavouras();
@@ -231,9 +241,8 @@ public class TelaPrincipal extends JFrame {
 
     private void atualizarComboLavouras() {
         lavouraBox.removeAllItems();
-
         if (usuarioAtual != null) {
-            for (Lavoura l : controller.getSistema().getLavouras(usuarioAtual)) {
+            for (Lavoura l : controller.getLavouras(usuarioAtual)) {
                 lavouraBox.addItem(l.getNome());
             }
         }

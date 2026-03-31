@@ -8,7 +8,7 @@ public class PainelFundo extends JPanel {
     private Image imagem;
 
     public PainelFundo() {
-        URL imgURL = getClass().getResource("/imagem/fundo.png");
+        URL imgURL = getClass().getResource("imagem/fundo.png");
         if (imgURL != null) imagem = new ImageIcon(imgURL).getImage();
         setLayout(new BorderLayout());
     }

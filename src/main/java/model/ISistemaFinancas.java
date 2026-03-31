@@ -3,12 +3,11 @@ package model;
 import java.util.List;
 
 public interface ISistemaFinancas {
-
     void adicionarUsuario(Usuario u);
     boolean removerUsuario(Usuario u);
     boolean cpfExiste(String cpf);
 
-    void adicionarLavoura(Usuario u, Lavoura l);
+    void adicionarLavoura(Usuario u, Lavoura l) throws Exception;
     boolean removerLavoura(Usuario u, String nome);
 
     Lavoura pesquisarLavoura(Usuario u, String nomeLavoura);
@@ -17,4 +16,7 @@ public interface ISistemaFinancas {
     List<Usuario> getUsuarios();
     List<Lavoura> getLavouras(Usuario u);
     String gerarRelatorio(Usuario u, String nomeLavoura);
+
+    void salvarDados() throws Exception;
+    void recuperarDados() throws Exception;
 }
