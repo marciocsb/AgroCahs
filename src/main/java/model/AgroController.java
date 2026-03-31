@@ -3,9 +3,6 @@ package model;
 import javax.swing.*;
 import java.util.List;
 
-/**
- * Controlador principal do sistema, conecta GUI com AgroFinancas.
- */
 public class AgroController implements ISistemaFinancas {
 
     private AgroFinancas sistema;
@@ -43,8 +40,12 @@ public class AgroController implements ISistemaFinancas {
     @Override
     public Lavoura pesquisarLavoura(Usuario u, String nomeLavoura) { return sistema.pesquisarLavoura(u, nomeLavoura); }
 
+    // Correção: agora aceita TipoDespesa e valor direto
     @Override
-    public void registrarDespesa(Usuario u, String nomeLavoura, Despesa d) { sistema.registrarDespesa(u, nomeLavoura, d); }
+    public void registrarDespesa(Usuario u, String nomeLavoura, TipoDespesa tipo, double valor) {
+        Despesa d = new Despesa(tipo, valor);
+        sistema.registrarDespesa(u, nomeLavoura, d);
+    }
 
     @Override
     public List<Usuario> getUsuarios() { return sistema.getUsuarios(); }

@@ -5,9 +5,6 @@ import java.io.Serializable;
 import java.text.NumberFormat;
 import java.util.*;
 
-/**
- * Classe responsável por gerenciar usuários e lavouras, registrar despesas e gerar relatórios.
- */
 public class AgroFinancas implements Serializable {
 
     private static final long serialVersionUID = 1L;
@@ -28,18 +25,12 @@ public class AgroFinancas implements Serializable {
         }
     }
 
-    /**
-     * Adiciona um usuário ao sistema.
-     */
     public void adicionarUsuario(Usuario usuario) {
         lavourasPorUsuario.putIfAbsent(usuario, new ArrayList<>());
         salvar(usuario);
     }
 
-    /**
-     * Remove um usuário do sistema.
-     * @return true se removido com sucesso, false caso contrário
-     */
+
     public boolean removerUsuario(Usuario usuario) {
         if (lavourasPorUsuario.containsKey(usuario)) {
             lavourasPorUsuario.remove(usuario);
@@ -50,26 +41,20 @@ public class AgroFinancas implements Serializable {
         return false;
     }
 
-    /**
-     * Verifica se um CPF já existe no sistema.
-     */
+
     public boolean cpfExiste(String cpf) {
         return lavourasPorUsuario.keySet().stream()
                 .anyMatch(u -> u.getCpf().replaceAll("\\D", "").equals(cpf.replaceAll("\\D", "")));
     }
 
-    /**
-     * Adiciona uma lavoura ao usuário.
-     */
+
     public void adicionarLavoura(Usuario usuario, Lavoura l) {
         lavourasPorUsuario.putIfAbsent(usuario, new ArrayList<>());
         lavourasPorUsuario.get(usuario).add(l);
         salvar(usuario);
     }
 
-    /**
-     * Remove uma lavoura do usuário.
-     */
+
     public boolean removerLavoura(Usuario usuario, String nomeLavoura) {
         List<Lavoura> lavouras = lavourasPorUsuario.get(usuario);
         if (lavouras != null) {

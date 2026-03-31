@@ -10,9 +10,6 @@ import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-/**
- * Testes automáticos para validar funcionalidades principais do sistema AgroFinancas.
- */
 public class AgroFinancasTest {
 
     private AgroController controller;

@@ -11,7 +11,8 @@ public interface ISistemaFinancas {
     boolean removerLavoura(Usuario u, String nome);
 
     Lavoura pesquisarLavoura(Usuario u, String nomeLavoura);
-    void registrarDespesa(Usuario u, String nomeLavoura, Despesa d);
+
+    void registrarDespesa(Usuario u, String nomeLavoura, TipoDespesa tipo, double valor);
 
     List<Usuario> getUsuarios();
     List<Lavoura> getLavouras(Usuario u);
