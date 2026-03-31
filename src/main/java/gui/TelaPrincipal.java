@@ -28,19 +28,24 @@ public class TelaPrincipal extends JFrame {
         setTitle("Sistema AgroFinanças");
         setDefaultCloseOperation(EXIT_ON_CLOSE);
         setLocationRelativeTo(null);
-        setLayout(new BorderLayout(10, 10));
 
+        // Correção: define o PainelFundo como fundo da tela
+        setContentPane(new PainelFundo());
+
+        setLayout(new BorderLayout(10, 10));
         add(criarPainelUsuario(), BorderLayout.NORTH);
         add(criarPainelCentro(), BorderLayout.CENTER);
         add(criarPainelRelatorio(), BorderLayout.SOUTH);
 
         atualizarComboUsuarios();
 
-        pack(); // 🔥 resolve corte de componentes
+        pack();
     }
+
     private JPanel criarPainelUsuario() {
         JPanel panel = new JPanel(new GridLayout(2, 4, 10, 10));
         panel.setBorder(BorderFactory.createTitledBorder("Usuário"));
+        panel.setOpaque(false); // deixa transparente
 
         usuarioNomeField = new JTextField();
         usuarioCpfField = new JTextField();
@@ -92,18 +97,19 @@ public class TelaPrincipal extends JFrame {
 
         return panel;
     }
+
     private JPanel criarPainelCentro() {
         JPanel panel = new JPanel(new GridLayout(1, 2, 10, 10));
-
+        panel.setOpaque(false); // deixa transparente
         panel.add(criarPainelLavoura());
         panel.add(criarPainelDespesa());
-
         return panel;
     }
 
     private JPanel criarPainelLavoura() {
         JPanel panel = new JPanel(new GridLayout(4, 2, 10, 10));
         panel.setBorder(BorderFactory.createTitledBorder("Lavoura"));
+        panel.setOpaque(false); // deixa transparente
 
         nomeField = new JTextField();
         areaField = new JTextField();
@@ -114,7 +120,6 @@ public class TelaPrincipal extends JFrame {
 
         addBtn.addActionListener(e -> {
             if (usuarioAtual == null) return;
-
             try {
                 controller.adicionarLavoura(usuarioAtual,
                         new Lavoura(nomeField.getText(), Double.parseDouble(areaField.getText())));
@@ -128,7 +133,6 @@ public class TelaPrincipal extends JFrame {
 
         remBtn.addActionListener(e -> {
             if (usuarioAtual == null) return;
-
             String nome = (String) lavouraBox.getSelectedItem();
             if (nome != null) {
                 controller.removerLavoura(usuarioAtual, nome);
@@ -151,15 +155,14 @@ public class TelaPrincipal extends JFrame {
     private JPanel criarPainelDespesa() {
         JPanel panel = new JPanel(new GridLayout(4, 2, 10, 10));
         panel.setBorder(BorderFactory.createTitledBorder("Despesa"));
+        panel.setOpaque(false); // deixa transparente
 
         tipoDespesaBox = new JComboBox<>(TipoDespesa.values());
         valorField = new JTextField();
 
         JButton btn = new JButton("Registrar");
-
         btn.addActionListener(e -> {
             if (usuarioAtual == null) return;
-
             try {
                 String lavoura = (String) lavouraBox.getSelectedItem();
                 TipoDespesa tipo = (TipoDespesa) tipoDespesaBox.getSelectedItem();
@@ -171,7 +174,6 @@ public class TelaPrincipal extends JFrame {
                 textArea.append(tipo + ": " + nf.format(valor) + "\n");
 
                 valorField.setText("");
-
             } catch (Exception ex) {
                 JOptionPane.showMessageDialog(this, "Erro no valor!");
             }
@@ -190,18 +192,16 @@ public class TelaPrincipal extends JFrame {
     }
 
     private JPanel criarPainelRelatorio() {
-        JPanel panel = new JPanel();
-        panel.setLayout(new BorderLayout());
+        JPanel panel = new JPanel(new BorderLayout());
         panel.setBorder(BorderFactory.createTitledBorder("Relatório"));
+        panel.setOpaque(false); // deixa transparente
 
         textArea = new JTextArea(10, 40);
         textArea.setEditable(false);
 
         JButton btn = new JButton("Gerar Relatório");
-
         btn.addActionListener(e -> {
             if (usuarioAtual == null) return;
-
             String lavoura = (String) lavouraBox.getSelectedItem();
             if (lavoura != null) {
                 textArea.setText(controller.gerarRelatorio(usuarioAtual, lavoura));
@@ -216,22 +216,18 @@ public class TelaPrincipal extends JFrame {
 
     private void atualizarComboUsuarios() {
         usuarioBox.removeAllItems();
-
         for (Usuario u : controller.getSistema().getUsuarios()) {
             usuarioBox.addItem(u);
         }
-
         if (usuarioBox.getItemCount() > 0) {
             usuarioBox.setSelectedIndex(0);
             usuarioAtual = (Usuario) usuarioBox.getSelectedItem();
         }
-
         atualizarComboLavouras();
     }
 
     private void atualizarComboLavouras() {
         lavouraBox.removeAllItems();
-
         if (usuarioAtual != null) {
             for (Lavoura l : controller.getSistema().getLavouras(usuarioAtual)) {
                 lavouraBox.addItem(l.getNome());
