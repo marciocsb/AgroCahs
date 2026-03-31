@@ -1,64 +1,58 @@
-AgroCahs - Sistema de Controle Financeiro para Agronegócio
- 
-O AgroCahs é um sistema em Java para auxiliar no controle financeiro de atividades agrícolas. Permite cadastrar usuários, gerenciar lavouras e registrar despesas, organizando dados de forma prática e eficiente.
+# 🌾 AgroCahs  
+### Sistema de Controle Financeiro para Agronegócio
 
-Objetivo:  
-Aplicar conceitos de programação orientada a objetos, arquitetura em camadas (MVC) e persistência de dados, simulando um sistema de gerenciamento financeiro voltado ao agronegócio.
+O **AgroCahs** é um sistema desenvolvido em **Java** para auxiliar no controle financeiro de atividades agrícolas.  
+Permite cadastrar usuários, gerenciar lavouras e registrar despesas, organizando dados de forma prática e eficiente.
 
-Arquitetura:
+---
 
-Model: classes de negócio (AgroFinancas, Usuario, Lavoura, Despesa)
+## 🎯 Objetivo
+Aplicar conceitos de **Programação Orientada a Objetos**, arquitetura em camadas (**MVC**) e **persistência de dados**, simulando um sistema de gerenciamento financeiro voltado ao agronegócio.
 
-Controller: AgroController, responsável por intermediar interface e lógica
+---
 
-View: TelaPrincipal, interface gráfica em Swing
+## 🏗️ Arquitetura
+- **Model:** `AgroFinancas`, `Usuario`, `Lavoura`, `Despesa`  
+- **Controller:** `AgroController`  
+- **View:** `TelaPrincipal` (interface gráfica em Swing)  
 
-Funcionalidades:
+---
 
-Cadastro de usuários com validação de CPF
+## ⚙️ Funcionalidades
+- Cadastro de usuários com validação de CPF  
+- Associação de lavouras a usuários  
+- Registro de despesas por lavoura  
+- Listagem de dados cadastrados  
+- Persistência em arquivos `.dat` via serialização  
 
-Associação de lavouras a usuários
+---
 
-Registro de despesas por lavoura
+## 🔄 Fluxo de Execução
+1. A aplicação inicia pela classe `Main`  
+2. O `AgroController` é instanciado  
+3. A interface (`TelaPrincipal`) é exibida  
+4. Usuário interage → Controller → `AgroFinancas`  
+5. Dados são armazenados/recuperados via `GravadorDeDados`  
 
-Listagem de dados cadastrados
+---
 
-Persistência em arquivos .dat via serialização
+## 📊 Estruturas de Dados
+- `Map<Usuario, List<Lavoura>>` para associar usuários às suas lavouras  
 
-Fluxo de Execução:
+---
 
-A aplicação inicia pela classe Main
+## 🚀 Possíveis Melhorias
+- Integração com banco de dados (MySQL, PostgreSQL)  
+- Interface gráfica mais moderna  
+- Validações mais robustas  
+- Autenticação de usuários  
+- Relatórios financeiros avançados  
 
-O AgroController é instanciado
+---
 
-A interface (TelaPrincipal) é exibida
+## 🛠️ Tecnologias
+- Java  
+- POO  
+- Swing  
+- Serialização  
 
-Usuário interage → Controller → AgroFinancas
-
-Dados são armazenados/recuperados via GravadorDeDados
-
-Estruturas de Dados:
-
-Map<Usuario, List<Lavoura>> para associar usuários às suas lavouras
-
-Possíveis Melhorias:
-
-Integração com banco de dados
-
-Interface gráfica mais moderna
-
-Validações mais robustas
-
-Autenticação de usuários
-
-Relatórios financeiros avançados
-
-Tecnologias:
-
-Java
-
-POO
-
-Swing
-
-Serialização
